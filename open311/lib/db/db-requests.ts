@@ -1,5 +1,5 @@
 import {ServiceRequestStatus, ServiceRequestWithExtensions} from "../model/service-request";
-import {IDatabase} from "pg-promise";
+import {IConnected, IDatabase} from "pg-promise";
 
 interface ServiceRequestServiceCode {
     readonly service_code: string | null;
@@ -13,11 +13,11 @@ export function findServiceCodes(db: IDatabase<any, any>): Promise<ServiceReques
     return db.manyOrNone("SELECT service_code FROM open311_service_request");
 }
 
-export function findStateIds(db: IDatabase<any, any>): Promise<ServiceRequestStatusId[]> {
+export function findStateIds(db: IConnected<any, any>): Promise<ServiceRequestStatusId[]> {
     return db.manyOrNone("SELECT status_id FROM open311_service_request");
 }
 
-export function findAll(db: IDatabase<any, any>): Promise<ServiceRequestWithExtensions[]> {
+export function findAll(db: IConnected<any, any>): Promise<ServiceRequestWithExtensions[]> {
     return db.manyOrNone(`${SELECT_REQUEST} ORDER BY service_request_id`).then(requests => requests.map(r => toServiceRequest(r)));
 }
 

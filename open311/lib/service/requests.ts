@@ -1,4 +1,4 @@
-import {IDatabase} from "pg-promise";
+import {IConnected, IDatabase} from "pg-promise";
 import {
     findAll as dbFindAll,
     find as dbFind,
@@ -6,13 +6,13 @@ import {
     update as dbUpdate
 } from '../db/db-requests';
 import {ServiceRequest, ServiceRequestWithExtensions, ServiceRequestWithExtensionsDto} from "../model/service-request";
-import {inDatabase} from "digitraffic-lambda-postgres/database";
+import {inDatabase, inDatabase2} from "digitraffic-lambda-postgres/database";
 
 export async function findAll(
     extensions: Boolean,
-    dbParam?: IDatabase<any, any>
+    dbParam?: IConnected<any, any>
 ): Promise<ServiceRequest[]> {
-    return await inDatabase(async (db: IDatabase<any, any>) => {
+    return await inDatabase2(async (db: IConnected<any, any>) => {
         const requests = await dbFindAll(db);
         if (!extensions) {
             return requests.map(r => toServiceRequest(r));

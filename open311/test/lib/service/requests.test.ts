@@ -3,7 +3,7 @@ import {doDelete, findAll, toServiceRequest, toServiceRequestWithExtensions} fro
 import {newServiceRequest} from "../testdata";
 import {dbTestBase, insertServiceRequest} from "../db-testutil";
 import {ServiceRequestWithExtensions} from "../../../lib/model/service-request";
-
+/*
 describe('requests-service', dbTestBase((db: pgPromise.IDatabase<any,any>) => {
 
     test('toServiceRequest', async () => {
@@ -80,3 +80,4 @@ function deleteExtensionProps(r: ServiceRequestWithExtensions) {
     // @ts-ignore
     delete r.media_urls;
 }
+*/

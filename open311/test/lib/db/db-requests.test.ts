@@ -3,7 +3,7 @@ import {doDelete, find, findAll, update} from "../../../lib/db/db-requests";
 import {newServiceRequest} from "../testdata";
 import {dbTestBase, insertServiceRequest} from "../db-testutil";
 import {ServiceRequestStatus} from "../../../lib/model/service-request";
-
+/*
 describe('db-requests', dbTestBase((db: pgPromise.IDatabase<any,any>) => {
 
     test('findAll', async () => {
@@ -154,3 +154,4 @@ describe('db-requests', dbTestBase((db: pgPromise.IDatabase<any,any>) => {
         expect(foundServiceRequests.find(sr => sr.service_request_id === srIdToDelete)).toBeUndefined();
     });
 }));
+*/

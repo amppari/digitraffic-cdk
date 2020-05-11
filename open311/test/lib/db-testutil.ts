@@ -1,5 +1,5 @@
 import * as pgPromise from "pg-promise";
-import {initDbConnection} from "digitraffic-lambda-postgres/database";
+import {initDbConnection, initDbConnection2} from "digitraffic-lambda-postgres/database";
 import {ServiceRequest} from "../../lib/model/service-request";
 import {createEditObject} from "../../lib/db/db-requests";
 
@@ -30,6 +30,23 @@ export function dbTestBase(fn: (db: pgPromise.IDatabase<any, any>) => void) {
     };
 }
 
+export function dbTestBase2(fn: (db: pgPromise.IConnected<any, any>) => void) {
+    return async (done: () => void) => {
+        process.env.DB_USER = 'road';
+        process.env.DB_PASS = 'road';
+        process.env.DB_URI = 'localhost:54322/road';
+        const db = await initDbConnection2('road', 'road', 'localhost:54322/road', {
+            noWarnings: true // ignore duplicate connection warning for tests
+        });
+        await truncate2(db.conn);
+        await fn(db.conn);
+        await truncate2(db.conn);
+        db.conn.done(true);
+        db.db.$pool.end();
+        done();
+    };
+}
+
 export async function truncate(db: pgPromise.IDatabase<any, any>): Promise<null> {
     return db.tx(t => {
        return t.batch([
@@ -40,7 +57,70 @@ export async function truncate(db: pgPromise.IDatabase<any, any>): Promise<null>
     });
 }
 
+export async function truncate2(db: pgPromise.IConnected<any, any>): Promise<null> {
+    return db.tx(t => {
+        return t.batch([
+            db.none('DELETE FROM open311_service_request'),
+            db.none('DELETE FROM open311_service_request_state'),
+            db.none('DELETE FROM open311_service'),
+        ]);
+    });
+}
+
 export function insertServiceRequest(db: pgPromise.IDatabase<any, any>, serviceRequests: ServiceRequest[]): Promise<void> {
+    return db.tx(t => {
+        const queries: any[] = serviceRequests.map(serviceRequest => {
+            return t.none(
+                `INSERT INTO open311_service_request(service_request_id,
+                                   status,
+                                   status_notes,
+                                   service_name,
+                                   service_code,
+                                   description,
+                                   agency_responsible,
+                                   service_notice,
+                                   requested_datetime,
+                                   updated_datetime,
+                                   expected_datetime,
+                                   address,
+                                   address_id,
+                                   zipcode,
+                                   geometry,
+                                   media_url,
+                                   status_id,
+                                   vendor_status,
+                                   title,
+                                   service_object_id,
+                                   service_object_type,
+                                   media_urls)
+                           VALUES ($(service_request_id),
+                                   $(status),
+                                   $(status_notes),
+                                   $(service_name),
+                                   $(service_code),
+                                   $(description),
+                                   $(agency_responsible),
+                                   $(service_notice),
+                                   $(requested_datetime),
+                                   $(updated_datetime),
+                                   $(expected_datetime),
+                                   $(address),
+                                   $(address_id),
+                                   $(zipcode),
+                                   ST_POINT($(long), $(lat)),
+                                   $(media_url),
+                                   $(status_id),
+                                   $(vendor_status),
+                                   $(title),
+                                   $(service_object_id),
+                                   $(service_object_type),
+                                   $(media_urls))`, createEditObject(serviceRequest));
+        });
+        return t.batch(queries);
+    });
+}
+
+export function insertServiceRequest2(db: pgPromise.IConnected<any, any>, serviceRequests: ServiceRequest[]): Promise<void> {
     return db.tx(t => {
         const queries: any[] = serviceRequests.map(serviceRequest => {
             return t.none(

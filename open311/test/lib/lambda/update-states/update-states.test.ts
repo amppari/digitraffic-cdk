@@ -1,6 +1,6 @@
-import * as pgPromise from "pg-promise";
+import {IConnected} from "pg-promise";
 import {handler} from '../../../../lib/lambda/update-states/lambda-update-states';
-import {dbTestBase} from "../../db-testutil";
+import {dbTestBase2} from "../../db-testutil";
 import {TestHttpServer} from "../../../../../common/test/httpserver";
 import {findAll} from "../../../../lib/db/db-states";
 import {newState} from "../../testdata";
@@ -12,9 +12,9 @@ process.env.ENDPOINT_USER = "some_user";
 process.env.ENDPOINT_PASS = "some_pass";
 process.env.ENDPOINT_URL = `http://localhost:${SERVER_PORT}`;
 
-describe('update-states', dbTestBase((db: pgPromise.IDatabase<any, any>) => {
+describe('update-states', () => {
 
-    test('update', async () => {
+    test('update', dbTestBase2(async (db: IConnected<any,any>) => {
         const states = fakeStates();
         states.sort((a: ServiceRequestState,b: ServiceRequestState) => a.key > b.key ? 1 : a.key < b.key ? -1 : 0);
         const server = new TestHttpServer();
@@ -30,9 +30,9 @@ describe('update-states', dbTestBase((db: pgPromise.IDatabase<any, any>) => {
         } finally {
             server.close();
         }
-    });
+    }));
 
-}));
+});
 
 function fakeStates(): ServiceRequestState[] {
     return Array.from({length: Math.floor(1 + Math.random() * 10)}).map(() => newState())

@@ -1,11 +1,11 @@
-import * as pgPromise from "pg-promise";
 import {findAll, update} from "../../../lib/db/db-states";
 import {newState} from "../testdata";
-import {dbTestBase} from "../db-testutil";
+import {dbTestBase2} from "../db-testutil";
+import {IConnected} from "pg-promise";
 
-describe('db-states', dbTestBase((db: pgPromise.IDatabase<any,any>) => {
+describe('db-states', () => {
 
-    test('findAll', async () => {
+    test('findAll', dbTestBase2(async (db: IConnected<any,any>) => {
         const states = Array.from({length: Math.floor(Math.random() * 10)}).map(() => {
             return newState();
         });
@@ -14,6 +14,6 @@ describe('db-states', dbTestBase((db: pgPromise.IDatabase<any,any>) => {
         const foundStates = await findAll(db);
 
         expect(foundStates.length).toBe(states.length);
-    });
+    }));
 
-}));
+});
