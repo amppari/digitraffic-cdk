@@ -58,6 +58,14 @@ const ports: Port[] = [
             portAreaCode: 'VUOS'
         }],
         default: null
+    },
+    {
+        locode: 'FIKAS',
+        areas: [],
+        default: {
+            longitude: 21.212125,
+            latitude: 62.350614969
+        }
     }
 ];
 
